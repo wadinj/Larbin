@@ -1,0 +1,22 @@
+# use java support.
+language: java
+jdk:
+  - oraclejdk8
+
+# install the newest java.
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
+sudo: false
+
+os:
+  - linux
+
+# skip install stage.
+install: true
+
+# run gradle build/test
+script:
+  - gradle test
