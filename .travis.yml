@@ -19,4 +19,5 @@ install: true
 
 # run gradle build/test
 script:
+  - cd Larbin-Api
   - gradle test
