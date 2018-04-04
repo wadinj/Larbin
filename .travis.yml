@@ -14,9 +14,15 @@ sudo: false
 os:
   - linux
 
+services:
+  - postgresql
+
 # skip install stage.
 install: true
 
+before_script:
+  - psql -c 'create database larbin;' -U postgres
+  
 # run gradle build/test
 script:
   - cd Larbin-Api
