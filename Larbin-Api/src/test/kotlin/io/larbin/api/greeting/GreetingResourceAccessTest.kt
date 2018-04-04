@@ -20,7 +20,17 @@ class GreetingResourceAccessTest {
     lateinit var service: GreetingResourceAccess
 
     @Test
-    fun `'retrieveCity' should return null if city for cityId doesnt exist`() {
+    fun `'retrieve' greeting with an inconsistent id should returns null`() {
         assertThat(service.retrieveGreeting(-99)).isNull()
+    }
+
+    @Test
+    fun `'create' greeting should insert in database with id auto-increment`() {
+        val greetingName = "Test"
+        service.addGreeting(Greeting(greetingName))
+        val greetingRetrieve = service.retrieveGreeting(1)
+        assertThat(greetingRetrieve?.id).isEqualTo(1)
+        assertThat(greetingRetrieve?.content).isEqualTo(greetingName)
+
     }
 }

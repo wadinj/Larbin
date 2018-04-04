@@ -3,7 +3,7 @@ buildscript {
     ext.spring_boot_version = '1.5.4.RELEASE'
 
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Required for Kotlin integration
@@ -17,15 +17,18 @@ apply plugin: "kotlin-spring" // See https://kotlinlang.org/docs/reference/compi
 apply plugin: 'org.springframework.boot'
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile('com.h2database:h2')
+    compile 'com.fasterxml.jackson.module:jackson-module-kotlin'
+    runtime 'org.postgresql:postgresql:42.2.2'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testRuntime 'org.postgresql:postgresql:42.2.2'
+    testCompile 'com.h2database:h2'
 }
 
 compileKotlin {

@@ -11,9 +11,9 @@ class GreetingResourceAccess(val greetingRepository: GreetingRepository) {
         return greetingRepository.findOne(greetingId)
     }
 
-    fun addGreeting(greeting: Greeting): GreetingResourceAccess {
+    fun addGreeting(greeting: Greeting): Greeting {
         greetingRepository.save(greeting)
-        return this
+        return greeting
     }
 
     fun updateCity(greeting: Greeting): GreetingResourceAccess {
