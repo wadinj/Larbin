@@ -31,6 +31,5 @@ class GreetingResourceAccessTest {
         val greetingRetrieve = service.retrieveGreeting(1)
         assertThat(greetingRetrieve?.id).isEqualTo(1)
         assertThat(greetingRetrieve?.content).isEqualTo(greetingName)
-
     }
 }

@@ -27,3 +27,6 @@ before_script:
 script:
   - cd Larbin-Api
   - gradle test
+  - gradle jacocoTestReport
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
