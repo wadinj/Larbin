@@ -2,15 +2,20 @@ package io.larbin.api.greeting
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.web.servlet.config.annotation.EnableWebMvc
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
 import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.plugins.Docket
 import springfox.documentation.swagger2.annotations.EnableSwagger2
 
+
 @Configuration
 @EnableSwagger2
-class SwaggerConfiguration {
+@EnableWebMvc
+class SwaggerConfiguration : WebMvcConfigurerAdapter() {
 
     @Bean
     fun swaggerApiConfiguration(): Docket = Docket(DocumentationType.SWAGGER_2)
@@ -18,4 +23,16 @@ class SwaggerConfiguration {
             .apis(RequestHandlerSelectors.any())
             .paths(PathSelectors.any())
             .build()
+
+    /**
+     * Workaround to add Swagger-ui into the resources with @EnableWebMvc
+     */
+    override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
+
+        registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/")
+
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/")
+    }
 }

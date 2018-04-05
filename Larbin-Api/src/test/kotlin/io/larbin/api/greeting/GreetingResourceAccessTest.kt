@@ -7,13 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.test.context.web.WebAppConfiguration
 
 @RunWith(SpringRunner::class)
-@ContextConfiguration(classes = arrayOf(GreetingConfig::class))
+@SpringBootTest(classes = arrayOf(GreetingConfig::class, SwaggerConfiguration::class))
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@WebAppConfiguration
 class GreetingResourceAccessTest {
 
     @Autowired
