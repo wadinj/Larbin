@@ -8,3 +8,5 @@
  */
 
 rootProject.name = 'Larbin'
+includeFlat 'test'
+
