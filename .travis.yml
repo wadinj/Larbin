@@ -25,7 +25,7 @@ before_script:
   
 # run gradle build/test
 script:
-  - cd Larbin-Api
+  - cd api
   - gradle test
   - gradle jacocoTestReport
 after_success:
