@@ -1,4 +1,4 @@
-package io.larbin.api.greeting
+package io.larbin.api.scenario
 
 import org.slf4j.LoggerFactory
 import org.springframework.boot.SpringApplication

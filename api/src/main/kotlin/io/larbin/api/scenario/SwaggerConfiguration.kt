@@ -1,4 +1,4 @@
-package io.larbin.api.greeting
+package io.larbin.api.scenario
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
