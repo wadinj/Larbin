@@ -1,5 +1,6 @@
 package io.larbin.api.scenario
 
+import io.larbin.api.scenario.entities.Scenario
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -7,14 +8,21 @@ import javax.validation.Valid
 @RequestMapping("/scenario")
 class ScenarioController(val scenarioService: ScenarioService) {
 
-    @GetMapping("/{id}")
-    fun getScenario(@PathVariable id: Long): Scenario = scenarioService.getScenario(id)
+    @GetMapping()
+    fun getAll(): List<Scenario> = scenarioService.getAll()
 
-    @PostMapping("/")
-    fun createScenario(@Valid @RequestBody scenario: Scenario) =
-            scenarioService.createScenario(scenario)
+    @GetMapping("/{id}")
+    fun get(@PathVariable id: Long): Scenario = scenarioService.get(id)
+
+    @PostMapping()
+    fun create(@Valid @RequestBody scenario: Scenario) =
+            scenarioService.create(scenario)
 
     @DeleteMapping("/{id}")
-    fun createScenario(@PathVariable id: Long) =
-            scenarioService.deleteScenario(id)
+    fun delete(@PathVariable id: Long) =
+            scenarioService.delete(id)
+
+    @DeleteMapping()
+    fun deleteAll() =
+            scenarioService.deleteAll()
 }

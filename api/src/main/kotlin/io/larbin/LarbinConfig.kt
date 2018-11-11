@@ -1,12 +1,13 @@
-package io.larbin.api.scenario
+package io.larbin
 
+import io.larbin.api.scenario.entities.Scenario
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 
 @Configuration
-@EntityScan(basePackageClasses = arrayOf(Scenario::class))
-@EnableMongoRepositories(basePackages = arrayOf("io.larbin.api"))
+@EntityScan(basePackageClasses = [Scenario::class])
+@EnableMongoRepositories(basePackages = ["io.larbin.api"])
 @ComponentScan
 class LarbinConfig

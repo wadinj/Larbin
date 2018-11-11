@@ -1,5 +1,6 @@
 package io.larbin.api.scenario
 
+import io.larbin.api.scenario.entities.Scenario
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -7,10 +8,14 @@ import org.springframework.stereotype.Component
 class ScenarioService @Autowired constructor(@Autowired
                                              private val scenarioRepository: ScenarioRepository) {
 
-    fun createScenario(scenario: Scenario): Scenario = scenarioRepository.insert(scenario)
+    fun create(scenario: Scenario): Scenario = scenarioRepository.insert(scenario)
 
-    fun getScenario(id: Long): Scenario = scenarioRepository.findOne(id)
+    fun getAll(): List<Scenario> = scenarioRepository.findAll()
 
-    fun deleteScenario(id: Long) = scenarioRepository.delete(id)
+    fun get(id: Long): Scenario = scenarioRepository.findOne(id)
+
+    fun deleteAll() = scenarioRepository.deleteAll()
+
+    fun delete(id: Long) = scenarioRepository.delete(id)
 
 }
