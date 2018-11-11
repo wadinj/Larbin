@@ -4,6 +4,7 @@ package io.larbin.api.scenario
 import io.larbin.LarbinConfig
 import io.larbin.api.scenario.entities.Scenario
 import io.larbin.api.scenario.entities.ScenarioConfig
+import io.larbin.api.scenario.entities.ScenarioMapping
 import io.larbin.api.scenario.entities.ScenarioRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -22,7 +23,8 @@ class ScenarioControllerTest {
 
     @Test
     fun `post and get it should retrieve it`() {
-        val scenario = Scenario("WikipediaIncome", ScenarioRequest("https://fakeTarget.com"), null, ScenarioConfig(true, 500, ""))
+        val scenario = Scenario("WikipediaIncome", ScenarioRequest("https://fakeTarget.com"),
+                listOf(ScenarioMapping("", "")), ScenarioConfig(true, 500, ""))
         testRestTemplate.postForObject("/scenario/", scenario, Scenario::class.java)
         val scenarioInserted = testRestTemplate.getForObject("/scenario", Array<Scenario>::class.java)
         testRestTemplate.delete("/scenario")

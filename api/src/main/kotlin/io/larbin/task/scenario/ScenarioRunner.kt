@@ -21,7 +21,7 @@ class ScenarioRunner(private val scenario: Scenario) : Runnable {
             "get" -> document = connection.get()
         }
         for(mapping in scenario.mappings) {
-            
+
         }
 
 

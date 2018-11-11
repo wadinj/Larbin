@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
-
-@Component
 class ScenarioWatcher(@Autowired val scenarioService: ScenarioService, @Autowired val scenarioRunnerFactory : ScenarioRunnerFactory) {
 
     @Scheduled(fixedDelay = 1000)

@@ -8,6 +8,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @Configuration
 @EntityScan(basePackageClasses = [Scenario::class])
-@EnableMongoRepositories(basePackages = ["io.larbin.api"])
+@EnableMongoRepositories(basePackages = ["io.larbin"])
 @ComponentScan
 class LarbinConfig
