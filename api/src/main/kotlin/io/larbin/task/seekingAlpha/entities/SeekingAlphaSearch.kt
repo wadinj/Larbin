@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 class SeekingAlphaSearch {
 
     @JsonProperty("symbols")
-    var symbols: List<SeekingAlphaSymbol>? = null
+    var symbols: MutableList<SeekingAlphaSymbol>? = null
 
     @JsonProperty("query")
-    var query: List<String>? = null
+    var query: MutableList<String>? = null
 }

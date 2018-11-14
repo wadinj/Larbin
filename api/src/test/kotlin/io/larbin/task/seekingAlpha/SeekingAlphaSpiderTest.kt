@@ -17,6 +17,6 @@ class SeekingAlphaSpiderTest {
 
     @Test
     fun `Should run update transcripts without error`() {
-        //spider.updateTranscripts()
+        spider.updateTranscripts()
     }
 }

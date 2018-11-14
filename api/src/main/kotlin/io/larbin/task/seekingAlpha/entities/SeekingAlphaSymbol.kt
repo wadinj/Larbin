@@ -7,5 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 class SeekingAlphaSymbol {
 
     @JsonProperty("name")
-    var name: String? = null
+    var ticker: String = ""
+
+    @JsonProperty("content")
+    var companyName: String = ""
 }
