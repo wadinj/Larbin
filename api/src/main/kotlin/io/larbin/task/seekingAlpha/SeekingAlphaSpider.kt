@@ -1,19 +1,22 @@
 package io.larbin.task.seekingAlpha
 
-import io.larbin.task.seekingAlpha.entities.EarningCall
-import io.larbin.task.seekingAlpha.entities.SeekingAlphaSearch
-import io.larbin.task.seekingAlpha.entities.Speaker
-import io.larbin.task.seekingAlpha.entities.Speech
+import io.larbin.task.seekingAlpha.entities.*
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
+import java.io.File.separator
 
 @Component
 class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepository) {
+
+    companion object {
+        var state: SpiderState = SpiderState()
+    }
 
     //@Scheduled(fixedDelay = 600000)
     fun updateTranscripts() {
@@ -21,27 +24,52 @@ class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepositor
         var searchApi = "https://seekingalpha.com/api/common/ac/search?term={0}&symbols=1&pages=10000"
         var transcriptListUrl = "https://seekingalpha.com/symbol/{0}/earnings/transcripts"
         var httpClient = RestTemplate()
-        for (asciiChar in 65..90) {
-            var searchTarget = searchApi.replace("{0}", asciiChar.toChar().toString())
-            var searchResult = httpClient.getForEntity<SeekingAlphaSearch>(searchTarget, SeekingAlphaSearch::class.java)
-            var symbols = searchResult.body.symbols
-            if (symbols != null) {
-                for (symbol in symbols) {
-                    if (symbol != null) {
-                        var earningCall = EarningCall()
-                        earningCall.reference.companyName = symbol.companyName
-                        earningCall.reference.ticker = symbol.ticker
-                        var transcripts = Jsoup.connect(transcriptListUrl.replace("{0}", symbol.ticker, false)).get()
-                        var links = transcripts.select("#headlines_transcripts > div > ul > li > div.content > div > a").eachAttr("href")
-                                .filter { c -> c.contains("earnings-call-transcript") }
-                        for (link in links) {
-                            var transcriptUrl = seekingAlphaBaseUri + link
-                            var article = Jsoup.connect(transcriptUrl).get().select("#a-body").first()
-                            parseArticle(article, earningCall)
-                            repository.insert(earningCall)
+        var startLetter = if(state.letter == null) 65 else state.letter
+        if(startLetter != null) {
+            for (asciiChar in startLetter until 90 step 1) {
+                var symbols: MutableList<SeekingAlphaSymbol>? = null
+                var searchTarget = searchApi.replace("{0}", asciiChar.toChar().toString())
+                try {
+                    var searchResult = httpClient.getForEntity<SeekingAlphaSearch>(searchTarget, SeekingAlphaSearch::class.java)
+                    symbols = searchResult.body.symbols
+                } catch (e: Exception) {
+                    state = SpiderState(null, asciiChar, null)
+                    return
+                }
+                var symbolIndex = if (state.symbol == null) 0 else state.symbol
+                if (symbols != null && symbolIndex != null) {
+                    for (i in symbolIndex..symbols.size) {
+                        if (symbols[i] != null) {
+                            var earningCall = EarningCall()
+                            earningCall.reference.companyName = symbols[i].companyName
+                            earningCall.reference.ticker = symbols[i].ticker
+                            var transcripts: Document;
+                                var transcriptListUrl = transcriptListUrl.replace("{0}", symbols[i].ticker, false)
+                            try {
+                                transcripts = Jsoup.connect(transcriptListUrl).get()
+                            } catch(e: Exception) {
+                                state = SpiderState(i, asciiChar, null)
+                                return
+                            }
+                            var links = transcripts.select("#headlines_transcripts > div > ul > li > div.content > div > a").eachAttr("href")
+                                    .filter { c -> c.contains("earnings-call-transcript") }
+                            var linkIndex = if(state.linkIndex == null) 0 else state.linkIndex
+                            if(linkIndex != null) {
+                                for (l in linkIndex..links.size) {
+                                    var transcriptUrl = seekingAlphaBaseUri + links[l]
+                                    try {
+                                        var article = Jsoup.connect(transcriptUrl).get().select("#a-body").first()
+                                        parseArticle(article, earningCall)
+                                        repository.insert(earningCall)
+                                        state = SpiderState(null, null, null)
+                                    } catch (e: Exception) {
+                                        state = SpiderState(i, l, asciiChar)
+                                        return
+                                    }
+                                }
+                            }
                         }
                     }
-                    Thread.sleep(1000)
                 }
             }
         }
@@ -76,11 +104,11 @@ class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepositor
                     else -> {
                         isExecutiveSection = false
                         isAnalystSection = false
-                        currentSpeaker = childElement.text()
                         if(!currentSpeech.isNullOrEmpty()) {
                             earningCall.speeches.add(Speech(speechOrder++, currentSpeaker, currentSpeech))
                             currentSpeech = ""
                         }
+                        currentSpeaker = childElement.text()
                     }
                 }
             }
@@ -93,7 +121,11 @@ class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepositor
         var affiliation = text?.split("-")
         speaker.firstName = names?.get(0)?.trim()
         speaker.lastName = names?.get(1)?.trim()
-        speaker.affiliation = affiliation?.drop(1)?.joinToString { i -> i }
+        speaker.affiliation = affiliation?.drop(1)?.joinToString("-")?.trim()
         return speaker
     }
+}
+
+data class SpiderState(var symbol: Int? = null, var letter: Int? = null, var linkIndex: Int?) {
+
 }

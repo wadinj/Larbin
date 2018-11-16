@@ -18,6 +18,9 @@ class Reference {
     @JsonProperty("companyName")
     var companyName: String? = null
 
+    @JsonProperty("title")
+    var title: String? = null
+
     @JsonProperty("ticker")
     var ticker: String? = null
 
