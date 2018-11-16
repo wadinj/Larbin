@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 import java.io.File.separator
+import java.util.regex.Pattern
 
 @Component
 class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepository) {
@@ -32,6 +33,7 @@ class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepositor
                 try {
                     var searchResult = httpClient.getForEntity<SeekingAlphaSearch>(searchTarget, SeekingAlphaSearch::class.java)
                     symbols = searchResult.body.symbols
+                    Thread.sleep(1000)
                 } catch (e: Exception) {
                     state = SpiderState(null, asciiChar, null)
                     return
@@ -47,6 +49,7 @@ class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepositor
                                 var transcriptListUrl = transcriptListUrl.replace("{0}", symbols[i].ticker, false)
                             try {
                                 transcripts = Jsoup.connect(transcriptListUrl).get()
+                                Thread.sleep(1000)
                             } catch(e: Exception) {
                                 state = SpiderState(i, asciiChar, null)
                                 return
@@ -56,9 +59,15 @@ class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepositor
                             var linkIndex = if(state.linkIndex == null) 0 else state.linkIndex
                             if(linkIndex != null) {
                                 for (l in linkIndex..links.size) {
+                                    var quarterRegex = Regex("q\\d{1}")
+                                    var yearegex = Regex("-\\d{4}-")
+                                    earningCall.reference.quarter = quarterRegex.find(links[l])?.groupValues?.singleOrNull()
+                                    earningCall.reference.year = yearegex.find(links[l])?.groupValues?.singleOrNull()?.replace("-", "")
                                     var transcriptUrl = seekingAlphaBaseUri + links[l]
                                     try {
-                                        var article = Jsoup.connect(transcriptUrl).get().select("#a-body").first()
+                                        var document = Jsoup.connect(transcriptUrl).get()
+                                        var article = document.select("#a-body").first()
+                                        earningCall.reference.title = document.select("#a-hd > h1").text()
                                         parseArticle(article, earningCall)
                                         repository.insert(earningCall)
                                         state = SpiderState(null, null, null)
@@ -66,6 +75,7 @@ class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepositor
                                         state = SpiderState(i, l, asciiChar)
                                         return
                                     }
+                                    Thread.sleep(1000)
                                 }
                             }
                         }
@@ -126,6 +136,6 @@ class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepositor
     }
 }
 
-data class SpiderState(var symbol: Int? = null, var letter: Int? = null, var linkIndex: Int?) {
+data class SpiderState(var symbol: Int? = null, var letter: Int? = null, var linkIndex: Int? = null) {
 
 }
