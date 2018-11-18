@@ -75,7 +75,7 @@ class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepositor
                                         state = SpiderState(i, l, asciiChar)
                                         return
                                     }
-                                    Thread.sleep(1000)
+                                    Thread.sleep(2000)
                                 }
                             }
                         }
@@ -123,6 +123,9 @@ class SeekingAlphaSpider(@Autowired private val repository: EarningCallRepositor
                 }
             }
         }
+        // add the last speech
+        if(!currentSpeech.isNullOrEmpty())
+        earningCall.speeches.add(Speech(speechOrder++, currentSpeaker, currentSpeech))
     }
 
     private fun getSpeakerFromText(text: String?): Speaker {

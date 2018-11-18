@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class EarningCall {
-    @JsonProperty("Referance")
+    @JsonProperty("reference")
     var reference: Reference = Reference()
 
     @JsonProperty("speeches")
